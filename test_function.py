@@ -1,8 +1,6 @@
 import unittest
-
 from pandas import Index
-
-from main import *
+import find_variables
 
 
 
