@@ -54,45 +54,39 @@ def investigate_object(df):
 def predict():
     df = json_normalize(request.get_json(force=True))
     df = df.replace(r'^\s*$', np.nan, regex=True)
-    # investigate_object(df)
+    df['x12'] = (df['x12'].replace('[\$,)]', '', regex=True)
+                 .replace('[(]', '-', regex=True).astype(float))
+    df['x63'] = df['x63'].str.replace('%', '', regex=True).astype(float)
 
-    test_val = df
-    test_val['x12'] = test_val['x12'].str.replace('$', '', regex=True)
-    test_val['x12'] = test_val['x12'].str.replace(',', '', regex=True)
-    test_val['x12'] = test_val['x12'].str.replace(')', '', regex=True)
-    test_val['x12'] = test_val['x12'].str.replace('(', '-', regex=True)
-    test_val['x12'] = test_val['x12'].astype(float)
-    test_val['x63'] = test_val['x63'].str.replace('%', '', regex=True)
-    test_val['x63'] = test_val['x63'].astype(float)
-    df8 = test_val
-    test_imputed = pd.DataFrame(imputer.transform(df8.drop(columns=['x5', 'x31', 'x81', 'x82'])),
-                                columns=df8.drop(columns=['x5', 'x31', 'x81', 'x82']).columns)
+    test_imputed = pd.DataFrame(imputer.transform(df.drop(columns=['x5', 'x31', 'x81', 'x82'])),
+                                columns=df.drop(columns=['x5', 'x31', 'x81', 'x82']).columns)
     test_imputed_std = pd.DataFrame(std_scaler.transform(test_imputed), columns=test_imputed.columns)
 
-    dumb5 = pd.get_dummies(df8['x5'], drop_first=True, prefix='x5', prefix_sep='_', dummy_na=True)
-    df9 = pd.concat([test_imputed_std, dumb5], axis=1, sort=False)
+    dumb5 = pd.get_dummies(df['x5'], drop_first=True, prefix='x5', prefix_sep='_', dummy_na=True)
+    df_imputed = pd.concat([test_imputed_std, dumb5], axis=1, sort=False)
 
-    dumb31 = pd.get_dummies(df8['x31'], drop_first=True, prefix='x31', prefix_sep='_', dummy_na=True)
-    df9 = pd.concat([test_imputed_std, dumb31], axis=1, sort=False)
+    dumb31 = pd.get_dummies(df['x31'], drop_first=True, prefix='x31', prefix_sep='_', dummy_na=True)
+    df_imputed = pd.concat([test_imputed_std, dumb31], axis=1, sort=False)
 
-    dumb81 = pd.get_dummies(df8['x81'], drop_first=True, prefix='x81', prefix_sep='_', dummy_na=True)
-    df9 = pd.concat([test_imputed_std, dumb81], axis=1, sort=False)
+    dumb81 = pd.get_dummies(df['x81'], drop_first=True, prefix='x81', prefix_sep='_', dummy_na=True)
+    df_imputed = pd.concat([test_imputed_std, dumb81], axis=1, sort=False)
 
-    dumb82 = pd.get_dummies(df8['x82'], drop_first=True, prefix='x82', prefix_sep='_', dummy_na=True)
-    df9 = pd.concat([test_imputed_std, dumb82], axis=1, sort=False)
+    dumb82 = pd.get_dummies(df['x82'], drop_first=True, prefix='x82', prefix_sep='_', dummy_na=True)
+    df_imputed = pd.concat([test_imputed_std, dumb82], axis=1, sort=False)
 
+    # Not all data sets will have all the variables required for the model
+    # Append columns of 0s for the missing data
     for i in variables:
-        if i not in df9.columns:
-            df9[i] = 0
+        if i not in df_imputed.columns:
+            df_imputed[i] = 0
 
-    prob = pd.DataFrame(model.predict(df9[variables])).rename(columns={0: 'phat'})
+    model_predict = pd.DataFrame(model.predict(df_imputed[variables])).rename(columns={0: 'phat'})
 
-    prob['business_outcome'] = (prob['phat'] >= threshold).astype(int)
-    df = prob
+    model_predict['business_outcome'] = (model_predict['phat'] >= threshold).astype(int)
 
-    modelJSON = json.loads(df9[variables].to_json(orient='records'))
-    outcomeJSON = json.loads(df['business_outcome'].to_json(orient='records'))
-    phatJSON = json.loads(df['phat'].to_json(orient='records'))
+    modelJSON = json.loads(df_imputed[variables].to_json(orient='records'))
+    outcomeJSON = json.loads(model_predict['business_outcome'].to_json(orient='records'))
+    phatJSON = json.loads(model_predict['phat'].to_json(orient='records'))
     if len(df) > 1:
         dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON,
                    "model_inputs": modelJSON}
