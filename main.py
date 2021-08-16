@@ -80,19 +80,23 @@ def predict():
         if i not in df_imputed.columns:
             df_imputed[i] = 0
 
+    # Perform the model prediction using the unpickled Logistical Regression finalized model
+    # Store values under phat
     model_predict = pd.DataFrame(model.predict(df_imputed[variables])).rename(columns={0: 'phat'})
 
+    # Determine outcome by comparing phat to threshold provided by business partner
+    # See config file for threshold value
     model_predict['business_outcome'] = (model_predict['phat'] >= threshold).astype(int)
 
-    modelJSON = json.loads(df_imputed[variables].to_json(orient='records'))
+    modelJSON = json.loads(df_imputed[variables].to_json(orient='columns'))
     outcomeJSON = json.loads(model_predict['business_outcome'].to_json(orient='records'))
     phatJSON = json.loads(model_predict['phat'].to_json(orient='records'))
-    if len(df) > 1:
-        dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON,
-                   "model_inputs": modelJSON}
-    else:
-        dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON,
-                   "model_inputs": modelJSON}
+    print(variables)
+
+    dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON}
+    for i in range(len(variables)):
+        dataSet[variables[i]] = (modelJSON[variables[i]])
+
     toReturn = json.dumps(dataSet, sort_keys=True, indent=4, separators=(',', ': '))
     return toReturn
 
