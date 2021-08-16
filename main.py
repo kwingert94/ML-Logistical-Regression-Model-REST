@@ -9,9 +9,9 @@ from sklearn.preprocessing import StandardScaler
 from waitress import serve
 import json
 import yaml
-import find_variables
+from find_variables import *
 
-
+# Load Config Data
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
 
