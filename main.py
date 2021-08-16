@@ -8,11 +8,17 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from waitress import serve
 import json
+import yaml
+
+
+with open(r'config/config.yml') as file:
+    config_data = yaml.load(file, Loader=yaml.FullLoader)
+
 
 app = Flask(__name__)
-
-model = loaded_model = pickle.load(open("finalized_model.sav", 'rb'))
-
+model = loaded_model = pickle.load(open(config_data["pickled_model_path"], 'rb'))
+imputer = pickle.load(open(config_data["pickled_imputer_path"], 'rb'))
+std_scaler = pickle.load(open(config_data["pickled_scaler_path"], 'rb'))
 
 def find_variables(axesNames):
     """
@@ -28,10 +34,9 @@ def find_variables(axesNames):
 
 variables = find_variables(model.params.axes)
 
-imputer = pickle.load(open("crunchyImputer.sav", 'rb'))
-std_scaler = pickle.load(open("crunchyScaler.sav", 'rb'))
 
-threshold = .75
+
+threshold = config_data["cuttof_threshold"]
 
 
 def investigate_object(df):
@@ -91,7 +96,7 @@ def predict():
     modelJSON = json.loads(df_imputed[variables].to_json(orient='columns'))
     outcomeJSON = json.loads(model_predict['business_outcome'].to_json(orient='records'))
     phatJSON = json.loads(model_predict['phat'].to_json(orient='records'))
-    print(variables)
+
 
     dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON}
     for i in range(len(variables)):

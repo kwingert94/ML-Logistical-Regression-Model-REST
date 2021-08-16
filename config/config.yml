@@ -1,0 +1,4 @@
+pickled_model_path: "model.sav"
+pickled_imputer_path: "imputer.sav"
+pickled_scaler_path: "scaler.sav"
+cuttof_threshold: .75
