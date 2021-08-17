@@ -15,12 +15,7 @@ from find_variables import *
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
 
-
 app = Flask(__name__)
-app.confg['CELERY_BROKER_URL'] = 'amqp://0.0.0.0//'
-#app.config['CELERY_BACKEND'] = 'db+mysql://prettypr_task:prettyprinted'
-
-celery = make_celery(app)
 
 # Unpickle required objects
 model = pickle.load(open(config_data["pickled_model_path"], 'rb'))
@@ -32,10 +27,8 @@ variables = find_variables(model.params.axes)
 threshold = config_data["cuttof_threshold"]
 
 
-
 @app.route('/predict/', methods=['POST'])
 def predict():
-
     # Load JSON File and clean up data.
     # Replace empty strings with NaNs, and convert currency and percentages to floats.
     # Todo find dynamic way to do this, remove hard coded references
@@ -79,18 +72,14 @@ def predict():
     model_predict['business_outcome'] = (model_predict['phat'] >= threshold).astype(int)
 
     # Convert Pandas to the JSON format, json.loads makes the end result human readable
-    modelJSON = json.loads(df_imputed[variables].to_json(orient='columns'))
-    outcomeJSON = json.loads(model_predict['business_outcome'].to_json(orient='records'))
-    phatJSON = json.loads(model_predict['phat'].to_json(orient='records'))
-
-    # Build JSON to return to caller
-    dataSet = {"business_outcome": outcomeJSON, "phat": phatJSON}
-    for i in range(len(variables)):
-        dataSet[variables[i]] = (modelJSON[variables[i]])
+    finalDf = pd.concat([df_imputed[variables], model_predict], axis=1, sort=False).astype('O')
+    dataSet = {}
+    for i in finalDf.index:
+        dataSet[str(i)] = json.loads(dataSet.loc[i].to_json(orient='columns'))
     toReturn = json.dumps(dataSet, sort_keys=True, indent=4, separators=(',', ': '))
     return toReturn
 
 
 if __name__ == "__main__":
     serve(app, host="0.0.0.0", port=1313, threads=4)
-    #app.run(host='0.0.0.0', port=1312, debug=True)
+    # app.run(host='0.0.0.0', port=1312, debug=True)

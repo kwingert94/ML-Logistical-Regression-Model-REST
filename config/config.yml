@@ -1,4 +1,4 @@
-pickled_model_path: "/picklejar/model.sav"
-pickled_imputer_path: "/picklejar/imputer.sav"
-pickled_scaler_path: "/picklejar/scaler.sav"
+pickled_model_path: "pickleJar/model.sav"
+pickled_imputer_path: "pickleJar/imputer.sav"
+pickled_scaler_path: "pickleJar/scaler.sav"
 cuttof_threshold: .75
