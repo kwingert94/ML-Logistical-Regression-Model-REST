@@ -38,6 +38,7 @@ jobs:
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: pytest
-          #command: python3 -m unittest discover -p 'test_function.py'
+          #command: pytest
+          command: python3 -m unittest discover
+
 

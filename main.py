@@ -23,15 +23,22 @@ std_scaler = pickle.load(open(config_data["pickled_scaler_path"], 'rb'))
 
 # Setup variables needed to evaluate incoming data
 variables = find_variables(model.params.axes)
+rawVars = []
+for i in range(len(variables)):
+    rawVars.append(variables[i].split('_')[0])
 threshold = config_data["cuttof_threshold"]
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
     # Load JSON File and clean up data.
+    try:
+        df = json_normalize(request.get_json(force=True))
+    except Exception as e:
+        return "Invalid Input Data", 400
+
     # Replace empty strings with NaNs, and convert currency and percentages to floats.
     # Todo find dynamic way to do this, remove hard coded references
-    df = json_normalize(request.get_json(force=True))
     df = df.replace(r'^\s*$', np.nan, regex=True)
     df['x12'] = (df['x12'].replace('[\$,)]', '', regex=True)
                  .replace('[(]', '-', regex=True).astype(float))
@@ -80,5 +87,5 @@ def predict():
 
 
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=1313, threads=4)
+    serve(app, host="0.0.0.0", port=8080, threads=4)
     # app.run(host='0.0.0.0', port=1312, debug=True)
