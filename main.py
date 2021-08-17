@@ -28,7 +28,7 @@ variables = find_variables(model.params.axes)
 threshold = config_data["cuttof_threshold"]
 
 
-@app.route('/predict/', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
     # Load JSON File and clean up data.
     # Replace empty strings with NaNs, and convert currency and percentages to floats.
@@ -76,7 +76,7 @@ def predict():
     finalDf = pd.concat([df_imputed[variables], model_predict], axis=1, sort=False).astype('O')
     dataSet = {}
     for i in finalDf.index:
-        dataSet[str(i)] = json.loads(dataSet.loc[i].to_json(orient='columns'))
+        dataSet[str(i)] = json.loads(finalDf.loc[i].to_json(orient='columns'))
     toReturn = json.dumps(dataSet, sort_keys=True, indent=4, separators=(',', ': '))
     return toReturn
 
