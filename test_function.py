@@ -1,6 +1,6 @@
 import unittest
 from pandas import Index
-import find_variables
+from find_variables import *
 
 
 class Test(unittest.TestCase):
