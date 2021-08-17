@@ -1,15 +1,20 @@
 FROM python
 
-WORKDIR /usr/src/app
+#WORKDIR /usr/src/app
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH = "$VIRTUAL_ENV/bin:$PATH"
 
-COPY requirements.txt ./
 
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
 
-COPY crunchyImputer.sav
-COPY crunchyScaler.save
-COPY finalized_model.sav
-Copy main.py
+RUN /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "./main" ]
+COPY /pickleJar/ /pickleJar/.
+COPY /config/ /config/.
+RUN ls
+COPY main.py .
+COPY find_variables.py .
+
+CMD [ "/opt/venv/bin/python", "main.py" ]
