@@ -10,7 +10,6 @@ from waitress import serve
 import json
 import yaml
 from find_variables import *
-print(pickle.format_version)
 # Load Config Data
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
