@@ -17,6 +17,10 @@ with open(r'config/config.yml') as file:
 
 
 app = Flask(__name__)
+app.confg['CELERY_BROKER_URL'] = 'amqp://0.0.0.0//'
+#app.config['CELERY_BACKEND'] = 'db+mysql://prettypr_task:prettyprinted'
+
+celery = make_celery(app)
 
 # Unpickle required objects
 model = pickle.load(open(config_data["pickled_model_path"], 'rb'))
@@ -88,5 +92,5 @@ def predict():
 
 
 if __name__ == "__main__":
-    # serve(app, host="0.0.0.0", port=1313, threads=16)
-    app.run(host='0.0.0.0', port=1312, debug=True)
+    serve(app, host="0.0.0.0", port=1313, threads=4)
+    #app.run(host='0.0.0.0', port=1312, debug=True)
