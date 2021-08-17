@@ -3,11 +3,9 @@ from pandas import Index
 import find_variables
 
 
-
 class Test(unittest.TestCase):
 
     def test_find_variables(self):
-
         variables = ['x5_saturday', 'x81_July', 'x81_December', 'x31_japan', 'x81_October', 'x5_sunday', 'x31_asia',
                      'x81_February', 'x91', 'x81_May', 'x5_monday', 'x81_September', 'x81_March', 'x53', 'x81_November',
                      'x44',
@@ -21,4 +19,3 @@ class Test(unittest.TestCase):
         result = find_variables(toTest)
         result.sort(), variables.sort()
         self.assertEqual(result, variables)
-
