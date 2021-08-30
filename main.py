@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 from flask import Flask, request
@@ -10,6 +12,8 @@ from waitress import serve
 import json
 import yaml
 from find_variables import *
+from loguru import logger
+
 # Load Config Data
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
@@ -31,6 +35,7 @@ threshold = config_data["cuttof_threshold"]
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    logger.info("Prediction Fired at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     # Load JSON File and clean up data.
     try:
         df = json_normalize(request.get_json(force=True))
@@ -86,6 +91,16 @@ def predict():
     return toReturn
 
 
+@app.route('/fets', methods=['Get'])
+def modelfeatures():
+    logger.info("Features Fired: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    columnNames = [x.split('_')[0] for x in variables]
+    toReturn = list(set(columnNames))
+    return json.dumps({'Features Required': toReturn}, sort_keys=True, indent=4, separators=(',', ': '))
+
+
 if __name__ == "__main__":
+    logger.info("Starting Webserver")
     serve(app, host="0.0.0.0", port=8080, threads=4)
+
     # app.run(host='0.0.0.0', port=1312, debug=True)

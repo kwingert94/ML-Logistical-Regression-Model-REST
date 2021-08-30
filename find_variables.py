@@ -1,6 +1,6 @@
 def find_variables(axesNames):
     """
-    This function takes in the axes of the model parameters and finds the column anmes.
+    This function takes in the axes of the model parameters and finds the column names.
     It returns a list of strings with the names
     """
     variables = []
