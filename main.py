@@ -2,23 +2,25 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from flask import Flask, request
+import uvicorn
 import pickle
 import statsmodels.api as sm
 from pandas import json_normalize
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-from waitress import serve
 import json
 import yaml
 from find_variables import *
 from loguru import logger
+from fastapi import APIRouter, FastAPI, Request
+from fastapi.responses import JSONResponse
 
 # Load Config Data
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
 
-app = Flask(__name__)
+app = FastAPI()
+
 
 # Unpickle required objects
 model = pickle.load(open(config_data["pickled_model_path"], 'rb'))
@@ -33,14 +35,17 @@ for i in range(len(variables)):
 threshold = config_data["cuttof_threshold"]
 
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.post('/predict')
+async def predict(request: Request):
     logger.info("Prediction Fired at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     # Load JSON File and clean up data.
     try:
-        df = json_normalize(request.get_json(force=True))
+        df = json_normalize(await request.json())
+
     except Exception as e:
         return "Invalid Input Data", 400
+    logger.info("Made it here at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+
 
     # Replace empty strings with NaNs, and convert currency and percentages to floats.
     # Todo find dynamic way to do this, remove hard coded references
@@ -87,20 +92,19 @@ def predict():
     dataSet = {}
     for i in finalDf.index:
         dataSet[str(i)] = json.loads(finalDf.loc[i].to_json(orient='columns'))
-    toReturn = json.dumps(dataSet, sort_keys=True, indent=4, separators=(',', ': '))
-    return toReturn
+    toReturn = json.dumps(dataSet, sort_keys=True, separators=(',', ': '))
+    return JSONResponse(content=toReturn)
 
 
-@app.route('/fets', methods=['Get'])
-def modelfeatures():
+
+@app.get('/fets')
+def model_features():
     logger.info("Features Fired: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     columnNames = [x.split('_')[0] for x in variables]
     toReturn = list(set(columnNames))
-    return json.dumps({'Features Required': toReturn}, sort_keys=True, indent=4, separators=(',', ': '))
+    return JSONResponse(content=json.dumps({'Features Required': toReturn}, sort_keys=True, separators=(',', ': ')))
 
 
 if __name__ == "__main__":
     logger.info("Starting Webserver")
-    serve(app, host="0.0.0.0", port=8080, threads=4)
-
-    # app.run(host='0.0.0.0', port=1312, debug=True)
+    uvicorn.run(app, host="0.0.0.0", port=8089)
