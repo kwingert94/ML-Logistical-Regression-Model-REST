@@ -7,3 +7,7 @@ statsmodels~=0.12.2
 PyYAML~=5.4.1
 scikit-learn~=0.24.2
 requests~=2.26.0
+uvicorn~=0.15.0
+loguru~=0.5.3
+fastapi~=0.68.0
+pydantic~=1.8.2

@@ -1,0 +1,233 @@
+from pydantic import BaseModel, validator
+from typing import Any, List, Optional
+from pydantic.validators import str_validator
+from loguru import logger
+
+class SingleRow(BaseModel):
+    x0: Optional[float]
+    x1: Optional[float]
+    x2: Optional[float]
+    x3: Optional[float]
+    x4: Optional[float]
+    x5: Optional[str]
+    x6: Optional[float]
+    x7: Optional[float]
+    x8: Optional[float]
+    x9: Optional[float]
+    x10: Optional[float]
+    x11: Optional[float]
+    x12: Optional[str]
+    x13: Optional[float]
+    x14: Optional[float]
+    x15: Optional[float]
+    x16: Optional[float]
+    x17: Optional[float]
+    x18: Optional[float]
+    x19: Optional[float]
+    x20: Optional[float]
+    x21: Optional[float]
+    x22: Optional[float]
+    x23: Optional[float]
+    x24: Optional[float]
+    x25: Optional[float]
+    x26: Optional[float]
+    x27: Optional[float]
+    x28: Optional[float]
+    x29: Optional[float]
+    x30: Optional[float]
+    x31: Optional[str]
+    x32: Optional[float]
+    x33: Optional[float]
+    x34: Optional[float]
+    x35: Optional[float]
+    x36: Optional[float]
+    x37: Optional[float]
+    x38: Optional[float]
+    x39: Optional[float]
+    x40: Optional[float]
+    x41: Optional[float]
+    x42: Optional[float]
+    x43: Optional[float]
+    x44: Optional[float]
+    x45: Optional[float]
+    x46: Optional[float]
+    x47: Optional[float]
+    x48: Optional[float]
+    x49: Optional[float]
+    x50: Optional[float]
+    x51: Optional[float]
+    x52: Optional[float]
+    x53: Optional[float]
+    x54: Optional[float]
+    x55: Optional[float]
+    x56: Optional[float]
+    x57: Optional[float]
+    x58: Optional[float]
+    x59: Optional[float]
+    x60: Optional[float]
+    x61: Optional[float]
+    x62: Optional[float]
+    x63: Optional[str]
+    x64: Optional[float]
+    x65: Optional[float]
+    x66: Optional[float]
+    x67: Optional[float]
+    x68: Optional[float]
+    x69: Optional[float]
+    x70: Optional[float]
+    x71: Optional[float]
+    x72: Optional[float]
+    x73: Optional[float]
+    x74: Optional[float]
+    x75: Optional[float]
+    x76: Optional[float]
+    x77: Optional[float]
+    x78: Optional[float]
+    x79: Optional[float]
+    x80: Optional[float]
+    x81: Optional[str]
+    x82: Optional[str]
+    x83: Optional[float]
+    x84: Optional[float]
+    x85: Optional[float]
+    x86: Optional[float]
+    x87: Optional[float]
+    x88: Optional[float]
+    x89: Optional[float]
+    x90: Optional[float]
+    x91: Optional[float]
+    x92: Optional[float]
+    x93: Optional[float]
+    x94: Optional[float]
+    x95: Optional[float]
+    x96: Optional[float]
+    x97: Optional[float]
+    x98: Optional[float]
+    x99: Optional[float]
+
+    @validator('*', pre=True)
+    def empty_str_to_none(cls, v):
+        if v == '':
+            return None
+        return v
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "inputs": [
+                    {
+                        'x0': 0.042317,
+                        'x1': -3.3447210000000003,
+                        'x2': 4.635124212161472,
+                        'x3': -0.5983959993003629,
+                        'x4': -0.6477715045570444,
+                        'x5': 'monday',
+                        'x6': 0.184902,
+                        'x7': 46.690015,
+                        'x8': 3.034132,
+                        'x9': 0.364704,
+                        'x10': 14.260733,
+                        'x11': -1.559332,
+                        'x12': '$5,547.78',
+                        'x13': 0.520324,
+                        'x14': 31.212255,
+                        'x15': 4.891671,
+                        'x16': 0.357763,
+                        'x17': 14.766366,
+                        'x18': -17.467243,
+                        'x19': 0.224628,
+                        'x20': 0.096752,
+                        'x21': 1.305564,
+                        'x22': 0.353632,
+                        'x23': 3.909028,
+                        'x24': -91.273052,
+                        'x25': 1.396952,
+                        'x26': 4.401593,
+                        'x27': 0.443086,
+                        'x28': 14.048787,
+                        'x29': -0.932243,
+                        'x30': 5.255472,
+                        'x31': 'germany',
+                        'x32': 0.54199153,
+                        'x33': 2.98948039,
+                        'x34': -1.78334189,
+                        'x35': 0.80127315,
+                        'x36': -2.60231221,
+                        'x37': 3.39682926,
+                        'x38': -1.22322646,
+                        'x39': -2.20977636,
+                        'x40': -68.69,
+                        'x41': 522.25,
+                        'x42': -428.69,
+                        'x43': 381.37,
+                        'x44': 0.0197503,
+                        'x45': 0.75116479,
+                        'x46': 0.8630479007977094,
+                        'x47': -1.0383166613479036,
+                        'x48': -0.27261876352216863,
+                        'x49': -0.3430207259042951,
+                        'x50': 0.31090086655652394,
+                        'x51': -0.7978419740300581,
+                        'x52': -2.0390175152938923,
+                        'x53': 0.87182889,
+                        'x54': 0.14373012,
+                        'x55': -1.15212514,
+                        'x56': -2.1703139704,
+                        'x57': -0.26784296202800567,
+                        'x58': 0.21211063295318527,
+                        'x59': 1.6926559406621045,
+                        'x60': -0.9522767913493433,
+                        'x61': -0.8625864974123282,
+                        'x62': 0.07484871579558282,
+                        'x63': '36.29%',
+                        'x64': 3.47125327,
+                        'x65': -3.16656509,
+                        'x66': 0.65446814,
+                        'x67': 14.60067029,
+                        'x68': -20.57521013,
+                        'x69': 0.71083785,
+                        'x70': 0.16983767,
+                        'x71': 0.55082127,
+                        'x72': 0.62814576,
+                        'x73': 3.38608078,
+                        'x74': -112.45263714,
+                        'x75': 1.48370808,
+                        'x76': 1.77035368,
+                        'x77': 0.75702363,
+                        'x78': 14.75731742,
+                        'x79': -0.62550355,
+                        'x80': '',
+                        'x81': 'October',
+                        'x82': 'Female',
+                        'x83': -0.7116680715420765,
+                        'x84': -0.26535598920105635,
+                        'x85': 0.5175495906776872,
+                        'x86': -1.0881027091519955,
+                        'x87': -1.8188638198005096,
+                        'x88': -1.3584469526619427,
+                        'x89': -0.6549951949654567,
+                        'x90': -0.493304226235515,
+                        'x91': 0.373853,
+                        'x92': 0.94143481,
+                        'x93': 3.54679834,
+                        'x94': -99.8574882,
+                        'x95': 0.403926,
+                        'x96': 1.65378726,
+                        'x97': 0.00771459,
+                        'x98': -32.02164582,
+                        'x99': -60.3127828,
+                    }
+                ]
+            }
+        }
+
+
+class MultipleRows(BaseModel):
+    inputs: List[SingleRow]
+
+
+    @validator('*', pre=True, each_item=True)
+    def empty_str_to_none(cls, v):
+        if v == '':
+            return None
+        return v

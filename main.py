@@ -1,11 +1,12 @@
 from datetime import datetime
-
+from typing import Any
 import numpy as np
 import pandas as pd
 import uvicorn
 import pickle
 import statsmodels.api as sm
 from pandas import json_normalize
+from fastapi.encoders import jsonable_encoder
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 import json
@@ -14,8 +15,11 @@ from find_variables import *
 from loguru import logger
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 # Load Config Data
+from inputData import SingleRow, MultipleRows
+
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
 
@@ -36,13 +40,17 @@ threshold = config_data["cuttof_threshold"]
 
 
 @app.post('/predict')
-async def predict(request: Request):
+async def predict(input_data: SingleRow) -> Any:
     logger.info("Prediction Fired at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     # Load JSON File and clean up data.
     try:
-        df = json_normalize(await request.json())
+        logger.info((input_data.dict()['x0']))
+        df = pd.DataFrame(columns=list(input_data.dict().keys()))
+        df.loc[0] = list(input_data.dict().values())
+        print(df)
 
     except Exception as e:
+        logger.info("Error: " + str(e))
         return "Invalid Input Data", 400
     logger.info("Made it here at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
 
@@ -57,6 +65,7 @@ async def predict(request: Request):
     # Run imputer to fill in gaps for data and then scale the values up
     test_imputed = pd.DataFrame(imputer.transform(df.drop(columns=['x5', 'x31', 'x81', 'x82'])),
                                 columns=df.drop(columns=['x5', 'x31', 'x81', 'x82']).columns)
+    logger.info((test_imputed['x3']))
     test_imputed_std = pd.DataFrame(std_scaler.transform(test_imputed), columns=test_imputed.columns)
 
     # Converts columns of strings into a boolean matrix.
