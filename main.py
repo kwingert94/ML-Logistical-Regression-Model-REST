@@ -23,7 +23,10 @@ from inputData import SingleRow, MultipleRows
 with open(r'config/config.yml') as file:
     config_data = yaml.load(file, Loader=yaml.FullLoader)
 
-app = FastAPI()
+app = FastAPI(
+    title="GLM 26",
+    description='REST endpoint for predicting if customer will make purchase.',
+    version="0.0.2",)
 
 
 # Unpickle required objects
@@ -40,7 +43,7 @@ threshold = config_data["cuttof_threshold"]
 
 
 @app.post('/predict/multi')
-async def predict(request: Request):
+async def predict_multiple(request: Request):
     logger.info("Prediction Fired at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     # Load JSON File and clean up data.
     try:
@@ -109,7 +112,7 @@ async def predict(request: Request):
 
 
 @app.post('/predict/single')
-async def predict(input_data: SingleRow) -> Any:
+async def predict_single(input_data: SingleRow) -> Any:
     logger.info("Prediction Fired at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     # Load JSON File and clean up data.
     try:
@@ -169,8 +172,9 @@ async def predict(input_data: SingleRow) -> Any:
     dataSet = {}
     for j in finalDf.index:
         dataSet[str(j)] = json.loads(finalDf.loc[j].to_json(orient='columns'))
-        logger.info("Predictions: " + str(dataSet[str(j)]))
+
     toReturn = json.dumps(dataSet, sort_keys=True, separators=(',', ': '))
+    logger.info("Predictions: " + str(toReturn))
     return JSONResponse(content=toReturn)
 
 
